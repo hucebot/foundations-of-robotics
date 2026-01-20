@@ -6,8 +6,8 @@ This repository contains lecture slides, code examples, and lab material used th
 
 ## Repository structure
 
-- [`lectures`](lectures/README.md): lecture slides and example code
-- [`lab-material`](lab-material/README.md): practical lab modules, simulations, and supporting material
+- [`lectures`](lectures): lecture slides and example code
+- [`lab-material`](lab-material): practical lab modules, simulations, and supporting material
 
 ## Getting started
 
