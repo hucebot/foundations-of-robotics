@@ -11,8 +11,6 @@ This repository contains lecture slides, code examples, and lab material used th
 
 ## Getting started
 
-Choose the path that matches your needs:
-
 - For lectures and example code, follow the instructions in [`lectures/README.md`](lectures/README.md).
 - For hands-on labs, start from [`lab-material/README.md`](lab-material/README.md) and refer to **Lab-notes.pdf**.
 
