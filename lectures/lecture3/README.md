@@ -1,37 +1,14 @@
-# `geometric_jacobian_2dofs_arm` 
-To run the notebook in the terminal:
+# Geometric Jacobian (2-DoF arm)
 
-`jupyter notebook --allow-root`
+In the Jupyter file browser running inside the container, open `geometric_jacobian_2dofs_arm.ipynb`
+and run all cells.
 
-and follow the instruction on screen to open a server:
+# Gradient descent (2-DoF arm) and inverse vs gradient descent
+In the Jupyter file browser running inside the container, open `gradient_descent_2dofs_arm.ipynb`
+and `inverse_vs_gradient_descent.ipynb`, then run all cells.
 
-```
-    To access the server, open this file in a browser:
-        file:///root/.local/share/jupyter/runtime/jpserver-45-open.html
-    Or copy and paste one of these URLs:
-        http://localhost:8888/tree?token=a1776d0fd226541afe6a0959054d83824d76e706f37a8715
-        http://127.0.0.1:8888/tree?token=a1776d0fd226541afe6a0959054d83824d76e706f37a8715
-```
+The scripts plot all data available, so consider removing generated files between runs:
 
-Once in the server select the notebook `geometric_jacobian_2dofs_arm.ipynb`.
-
-# `gradient_descent_2dofs_arm` and `inverse_vs_gradient_descent`
-To run the notebook in the terminal:
-
-`jupyter notebook --allow-root`
-
-and follow the instruction on screen to open a server:
-
-```
-    To access the server, open this file in a browser:
-        file:///root/.local/share/jupyter/runtime/jpserver-45-open.html
-    Or copy and paste one of these URLs:
-        http://localhost:8888/tree?token=a1776d0fd226541afe6a0959054d83824d76e706f37a8715
-        http://127.0.0.1:8888/tree?token=a1776d0fd226541afe6a0959054d83824d76e706f37a8715
-```
-
-Once in the server select the notebook `gradient_descent_2dofs_arm.ipynb` or `inverse_vs_gradient_descent`. Notice that the scripts plot all the data available, hence consider to cancel the generated files between runs:
-
-```
+```bash
 rm *.csv *.png *.gif
 ```

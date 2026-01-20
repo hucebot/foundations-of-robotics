@@ -1,14 +1,30 @@
-# For graphics
-xhost +
+#!/usr/bin/env bash
 
-isRunning=`docker ps -f name=introduction_to_robotics | grep -c "introduction_to_robotics"`;
+CONTAINER_NAME=robotics-lectures
+IMAGE_NAME=ghcr.io/fabio-amadio/robotics-lectures:2026
 ROOT_DIR="$(pwd)"
 
+isRunning=$(docker ps -f name=${CONTAINER_NAME} | grep -c ${CONTAINER_NAME})
+
+is_wsl() {
+    grep -qi microsoft /proc/version
+}
+
 if [ $isRunning -eq 0 ]; then
-	docker rm introduction_to_robotics
+    echo "Starting Robotics-Lectures container..."
+
+	# Allow Docker to access X server (skip in WSL)    
+    if ! is_wsl; then
+        xhost +local:docker >/dev/null
+    fi
+
+	# Remove stopped container if it exists
+    docker rm ${CONTAINER_NAME} >/dev/null 2>&1
+
 	docker run \
+        -it \
+        --name ${CONTAINER_NAME} \
 		--security-opt seccomp=unconfined \
-		--name introduction_to_robotics  \
 		--interactive \
 		--tty \
 		--net host \
@@ -22,9 +38,9 @@ if [ $isRunning -eq 0 ]; then
 		--volume ${ROOT_DIR}/lecture3:/home/introduction_to_robotics/lecture3 \
 		--volume ${ROOT_DIR}/lecture4:/home/introduction_to_robotics/lecture4 \
 		--volume ${ROOT_DIR}/lecture4:/home/introduction_to_robotics/lecture5 \
-		introduction_to_robotics
+		${IMAGE_NAME}
 
 else
-    echo "Docker already running."
-    docker exec -it introduction_to_robotics /bin/bash
+    echo "Docker Robotics-Lectures already running."
+    docker exec -it ${CONTAINER_NAME} /bin/bash
 fi
