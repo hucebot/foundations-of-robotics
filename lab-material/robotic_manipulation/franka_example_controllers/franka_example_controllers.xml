@@ -1,0 +1,9 @@
+<library path="franka_example_controllers">
+    <class name="franka_example_controllers/ExerciseCartesianImpedanceController"
+           type="franka_example_controllers::ExerciseCartesianImpedanceController"     
+           base_class_type="controller_interface::ControllerInterface">
+        <description>
+            Cartesian impedance controller exercise.
+        </description>
+    </class>
+</library>
