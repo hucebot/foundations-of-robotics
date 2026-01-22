@@ -9,14 +9,18 @@ class MinimalSubscriber(Node):
     def __init__(self):
         super().__init__('minimal_subscriber')
         # TODO: declare and load param 'topic_name'
-        # ...
+        self.declare_parameter("topic_name", "chatter")
+        topic_name = self.get_parameter("topic_name").value
         # TODO: create subscription
-        # ...
+        self.subscription = self.create_subscription(
+            String,
+            topic_name,
+            self.listener_callback,
+            10)
 
     def listener_callback(self, msg):
         # TODO: print the message inside the callback
-        # ...
-        pass
+        self.get_logger().info('I heard: "%s"' % msg.data)
 
 
 def main(args=None):

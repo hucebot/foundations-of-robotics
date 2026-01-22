@@ -30,7 +30,7 @@ class SimpleKeyboardTeleop(Node):
         # TODO: define the set of allowed keys between:
         # - {"w", "a", "s", "d"} for QWERTY keyboards
         # - {"z", "q", "s", "d"} for AZERTY keyboards
-        # ...
+        self.allowed = {"w", "a", "s", "d"}  # or {"z", "q", "s", "d"}
         # ------------------------------------------------------------
 
         self.get_logger().info("Simple keyboard teleop started.")
@@ -45,8 +45,23 @@ class SimpleKeyboardTeleop(Node):
         # - check self.pressed and decide linear and rotational speed
         # - create and fill-in a Twist msg
         # - publish the Twist msg with self.pub
-        # ...
-        pass
+
+        vx = 0.0
+        wz = 0.0
+
+        if ("w" in self.pressed) and ("s" not in self.pressed):
+            vx = +self.linear_speed
+        elif ("s" in self.pressed) and ("w" not in self.pressed):
+            vx = -self.linear_speed
+        if ("a" in self.pressed) and ("d" not in self.pressed):
+            wz = +self.angular_speed
+        elif ("d" in self.pressed) and ("a" not in self.pressed):
+            wz = -self.angular_speed
+
+        msg = Twist()
+        msg.linear.x = vx
+        msg.angular.z = wz
+        self.pub.publish(msg)
         # ------------------------------------------------------------
 
     def key_to_char(self, key):
@@ -65,8 +80,11 @@ class SimpleKeyboardTeleop(Node):
         # - Convert key to lowercase char
         # - If char belongs to self.allowed add it to self.pressed
         # - Otherwise return
-        # ...
-        pass
+        ch = self.key_to_char(key)
+        if ch not in self.allowed:
+            return
+
+        self.pressed.add(ch)
         # ------------------------------------------------------------
 
         self.publish_cmd_vel()
@@ -77,8 +95,11 @@ class SimpleKeyboardTeleop(Node):
         # - Convert key to lowercase char
         # - If char belongs to self.allowed add it to self.pressed
         # - Otherwise return
-        # ...
-        pass
+        ch = self.key_to_char(key)
+        if ch not in self.allowed:
+            return
+
+        self.pressed.discard(ch)
         # ------------------------------------------------------------
 
         self.publish_cmd_vel()

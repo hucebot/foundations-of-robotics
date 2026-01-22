@@ -33,5 +33,12 @@ def generate_launch_description():
             }]
         ),
         # TODO: add the 'sub_node' passing the 'topic_name' parameter
-        # ...
+        Node(
+            package='exercise_pub_sub',
+            executable='sub_node',
+            name='sub_node',
+            parameters=[{
+                'topic_name': topic_name
+            }]
+        ),
     ])

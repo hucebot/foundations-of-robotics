@@ -164,16 +164,27 @@ class BugNavigator(Node):
         # TODO: store msg in self.goal, get current pose from TF and
         #  and save it in self.start, re-init self.hit_point and
         #  self.hit_goal_dist, set self.state to "GO_TO_GOAL"
-        # ...
-        pass
+        self.goal = msg
+        pose = self.get_pose()
+        if pose is None:
+            self.get_logger().warn("Got goal but no TF pose yet.")
+            return
+        x, y, _ = pose
+        self.start = (x, y)
+        self.hit_point = None
+        self.hit_goal_dist = None
+        self.state = "GO_TO_GOAL"
+        self.get_logger().info(
+            "Goal received: "
+            f"({msg.pose.position.x:.2f}, {msg.pose.position.y:.2f})"
+        )
         # ------------------------------------------------------------
 
     def on_scan(self, msg):
         """Scan topic cb: store last LaserScan msg received."""
         # ------------------------------------------------------------
         # TODO: store the LaserScan msg into self.scan
-        # ...
-        pass
+        self.scan = msg
         # ------------------------------------------------------------
 
     # ----------------------------
@@ -191,15 +202,35 @@ class BugNavigator(Node):
 
         # ------------------------------------------------------------
         # TODO: Compute start and end of the angular sector
-        # ...
+        angle_start = math.radians(center_deg - half_width_deg)
+        angle_end = math.radians(center_deg + half_width_deg)
         # TODO: Normalize angles to [0, 2*pi)
-        # ...
+        angle_start = angle_start % (2 * math.pi)
+        angle_end = angle_end % (2 * math.pi)
+
         # TODO: Get the start and end indices from the corresponding angles
-        # ...
+        i_start = round(angle_start / self.scan.angle_increment)
+        i_end = round(angle_end / self.scan.angle_increment)
+
+        # TODO: function to find min in array discarding inf and nan
+        def finite_min(seq):
+            best = float("inf")
+            for r in seq:
+                if math.isfinite(r):
+                    best = min(best, r)
+            return best
         # TODO: find the minimum range value between i_start and i_end
         # handle the case in which i_start > i_end !!!
-        # ...
-        pass
+        if i_start <= i_end:
+            # the sector doesn't cross 0 angle
+            d = finite_min(self.scan.ranges[i_start:i_end+1])
+        else:
+            # the sector crosses 0 angle
+            dist_1 = finite_min(self.scan.ranges[0:i_end+1])
+            dist_2 = finite_min(self.scan.ranges[i_start:-1])
+            d = min(dist_1, dist_2)
+
+        return d
         # ------------------------------------------------------------
 
     def front_dist(self):
@@ -226,9 +257,25 @@ class BugNavigator(Node):
 
         # ------------------------------------------------------------
         # TODO: compute the distance of (x, y) from the start-goal line
-        # ...
-        pass
-        # ------------------------------------------------------------
+
+        # the m-line connects the start to the goal point
+        x_start, y_start = self.start
+        x_goal, y_goal = self.goal.pose.position.x, self.goal.pose.position.y
+
+        # Line coefficients: a*x + b*y + c = 0
+        a = y_start - y_goal
+        b = x_goal - x_start
+        c = x_start * y_goal - x_goal * y_start
+
+        denom = math.sqrt(a**2 + b**2)
+        if denom < 1e-6:
+            # start and goal coincide
+            dx = x - x_start
+            dy = y - y_start
+            return math.sqrt(dx**2 + dy**2)
+
+        # Perpendicular distance from (x, y) to the line
+        return abs(a * x + b * y + c) / denom
 
     # ----------------------------
     # Motion primitives
@@ -264,8 +311,25 @@ class BugNavigator(Node):
         """Publish a twist msg that drives the robot along the left wall."""
         # ------------------------------------------------------------
         # TODO: publish a cmd_vel to follow the wall on the left
-        # ...
-        pass
+        front = self.front_dist()
+        left = self.left_dist()
+
+        # Obstacle in front -> turn right
+        if front < self.wall_dist:
+            vx = 0.0
+            wz = -self.angular_speed
+
+        # Wall too far on the left -> turn left
+        elif left > 1.25 * self.wall_dist:
+            vx = 0.0
+            wz = self.angular_speed
+
+        # Otherwise: go forward
+        else:
+            vx = self.linear_speed
+            wz = 0.0
+
+        self.publish_cmd(vx, wz)
         # ------------------------------------------------------------
 
     # ----------------------------

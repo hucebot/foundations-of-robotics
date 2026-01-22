@@ -72,10 +72,34 @@ controller_interface::return_type ExerciseCartesianImpedanceController::update(
   error.setZero();
 
   /* TODO: Compute the task torques  ----------------------------------------------------------------- */
+  
+  // Get the position error
+  error.head(3) << position_d_ - current_position_;
+
+  // Get the orientation error
+  // - compute the difference between current and desired quaternions
+  Eigen::Quaterniond error_quaternion = current_orientation_.inverse() * orientation_d_;
+  error.tail(3) << error_quaternion.x(), error_quaternion.y(), error_quaternion.z();
+  // - transform it in robot base frame
+  error.tail(3) << current_transform.block<3, 3>(0, 0) * error.tail(3);
+
+  // Compute desired torques
+  // - task control torques J^T * (K * err - D * vel)
+  tau_task << jacobian.transpose() * (task_stiff_ * error - task_damp_ * (jacobian * dq));
 
   /* TODO: Compute the null-space torques  ------------------------------------------------------------ */
+
+  // Compute the Jacobian pseudoinverse
+  Eigen::MatrixXd jacobian_pinv;
+  pseudoInverse(jacobian, jacobian_pinv, 0.2);
+  // Null-space control torques
+  tau_nullspace << (Eigen::MatrixXd::Identity(7, 7) - jacobian_pinv * jacobian) *
+                   (ns_stiff_ * (q_d_nullspace_ - q) - ns_damp_ * dq);
   
   /* TODO: Filter the reference pose  ----------------------------------------------------------------- */
+
+  position_d_ = filter_param_ * position_d_target_ + (1.0 - filter_param_) * position_d_;
+  orientation_d_ = orientation_d_.slerp(filter_param_, orientation_d_target_);
 
   /* ------------------------------------------------------------------------------------------------ */
 
@@ -176,7 +200,9 @@ void ExerciseCartesianImpedanceController::equilibriumPoseCallback(
     const geometry_msgs::msg::PoseStamped& msg) {
   position_d_target_ << msg.pose.position.x, msg.pose.position.y, msg.pose.position.z;
   // coeffs() order is x, y, z, w
-
+  orientation_d_target_.coeffs() << msg.pose.orientation.x, msg.pose.orientation.y,
+      msg.pose.orientation.z, msg.pose.orientation.w;
+  orientation_d_target_.normalize();
 }
 
 /* ------------------------------------------------------------------------------------------------ */

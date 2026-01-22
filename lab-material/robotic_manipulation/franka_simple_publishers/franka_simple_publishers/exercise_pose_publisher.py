@@ -27,7 +27,30 @@ class ExercisePosePub(Node):
 
         ''' --- TODO: Declare, load and process the "goal" parameter --- '''
 
-        # ...
+        # Parameter: goal = [T, x, y, z, qx, qy, qz, qw]
+        self.declare_parameter(
+            "goal", [5.0, 0.3, 0.0, 0.5, 1.0, 0.0, 0.0, 0.0]
+        )
+        goal = np.array(self.get_parameter("goal").value)
+
+        if len(goal) != 8:
+            raise ValueError(
+                "'goal' must have 8 values: [T, x, y, z, qx, qy, qz, qw]"
+            )
+
+        self.T = goal[0]
+
+        if self.T <= 0.0:
+            raise ValueError("Trajectory duration T must be > 0")
+        
+        self.goal_pos = goal[1:4]
+        self.goal_quat = goal[4:8]
+
+        quat_norm = np.linalg.norm(self.goal_quat)
+        if quat_norm < 1e-9:
+            raise ValueError("Goal quaternion has near-zero norm")
+
+        self.goal_quat = self.goal_quat / quat_norm
 
         ''' ----------------------------------------------------------- '''
 
@@ -79,7 +102,14 @@ class ExercisePosePub(Node):
 
         ''' ----- TODO: Compute interpolated pose at each time step --- '''
 
-        # ...
+        # Position: linear interpolation
+        alpha = self.t / self.T
+        pos = (1 - alpha) * self.start_pos + alpha * self.goal_pos
+
+        # Orientation: SLERP
+        slerp = Slerp([0.0, 1.0], R.from_quat([self.start_quat, self.goal_quat]))
+        rot = slerp(alpha)
+        quat = rot.as_quat()
 
         ''' ----------------------------------------------------------- '''
 
