@@ -58,9 +58,9 @@ controller_interface::return_type ExerciseCartesianImpedanceController::update(
   // - compute the EE Jacobian
   Eigen::Matrix<double, 6, 7> jacobian(
       franka_robot_model_->getZeroJacobian(franka::Frame::kEndEffector).data());
-  // - get the current joint positions
-  Eigen::Map<const Vector7d> dq(franka_robot_model_->getRobotState()->dq.data());
   // - get the current joint velocities
+  Eigen::Map<const Vector7d> dq(franka_robot_model_->getRobotState()->dq.data());
+  // - get the current joint positions
   Eigen::Map<const Vector7d> q(franka_robot_model_->getRobotState()->q.data());
 
   // Allocate torque vectors
