@@ -1,3 +1,6 @@
 [submodule "projects/2026/task_priority_framework_siciliano_slotine_1991"]
 	path = projects/2026/task_priority_framework_siciliano_slotine_1991
 	url = git@github.com:hucebot/task_priority_framework_siciliano_slotine_1991.git
+[submodule "projects/2026/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000"]
+	path = projects/2026/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000
+	url = git@github.com:hucebot/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000.git
