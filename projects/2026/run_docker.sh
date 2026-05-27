@@ -15,6 +15,7 @@ if [ $isRunning -eq 0 ]; then
 		--privileged \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix \
 		--volume $(pwd)/task_priority_framework_siciliano_slotine_1991:/home/projects/task_priority_framework_siciliano_slotine_1991 \
+		--volume $(pwd)/local_incremental_planning_deluca_oriolo_1994:/home/projects/local_incremental_planning_deluca_oriolo_1994 \
 		robotics-projects-2026
 
 else

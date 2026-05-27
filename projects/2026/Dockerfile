@@ -22,7 +22,7 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --upgrade pip
-RUN pip install numpy PyQt6 pyqtgraph matplotlib
+RUN pip install numpy PyQt6 pyqtgraph matplotlib scipy
 
 RUN apt-get update && apt-get install -y \
     libxcb-cursor0 \
