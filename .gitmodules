@@ -4,3 +4,6 @@
 [submodule "projects/2026/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000"]
 	path = projects/2026/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000
 	url = git@github.com:hucebot/unicycle_dynamic_feedback_linearization_deluca_oriolo_vendittelli_2000.git
+[submodule "projects/2026/local_incremental_planning_deluca_oriolo_1994"]
+	path = projects/2026/local_incremental_planning_deluca_oriolo_1994
+	url = git@github.com:hucebot/local_incremental_planning_deluca_oriolo_1994.git
